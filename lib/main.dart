@@ -32,6 +32,7 @@ class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bloc = BlocProvider.of<CounterBloc>(context);
+
     return Scaffold(
       appBar: AppBar(
         title: Text(title),
@@ -61,6 +62,7 @@ class MyHomePage extends StatelessWidget {
             onPressed: (){
               bloc.add(IncrementEvent());
             },
+            key: Key('IncrementButton'),
             tooltip: 'Increment',
             child: Icon(Icons.add),
           ),
@@ -69,6 +71,7 @@ class MyHomePage extends StatelessWidget {
             onPressed: (){
               bloc.add(DecrementEvent());  ////sink.add
             },
+
             tooltip: 'Decrement',
             child: Icon(Icons.remove),
           ),

@@ -23,8 +23,22 @@ void main() {
     await tester.tap(find.byIcon(Icons.add));
     await tester.pump();
 
+    await tester.tap(find.byTooltip("Increment"));
+    await tester.pump();
+
     // Verify that our counter has incremented.
+    expect(find.text('1'), findsNothing);
     expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    expect(find.text('2'), findsOneWidget);
+
+    await tester.tap(find.byKey(Key("IncrementButton")));
+    await tester.pump();
+
+    // Verify that our counter has incremented.
+    expect(find.text('1'), findsNothing);
+    expect(find.text('0'), findsNothing);
+    expect(find.text('2'), findsNothing);
+    expect(find.text('3'), findsOneWidget);
+
   });
 }
