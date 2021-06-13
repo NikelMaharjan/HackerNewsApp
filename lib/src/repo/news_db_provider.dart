@@ -15,12 +15,16 @@ class NewsDbProvider implements Source, Cache {
   }
 
   Future<void> _init() async {
-    Directory dir = await getApplicationDocumentsDirectory();   //internal storage access give/ folder reference
-    final dbPath = path.join(dir.path, DB_NAME); //it will create file and hold the path
+    Directory dir =
+        await getApplicationDocumentsDirectory(); //internal storage access give/ folder reference
+    final dbPath =
+        path.join(dir.path, DB_NAME); //it will create file and hold the path
 
     _db = await openDatabase(dbPath, version: 1,
-        onCreate: (Database newDb, int version) {//oncreate will call if database is not created. we cant use _db here since it is in await
-      Batch batch = newDb.batch(); //batch will collect sql commands first and execute one by one
+        onCreate: (Database newDb, int version) {
+      //oncreate will call if database is not created. we cant use _db here since it is in await
+      Batch batch = newDb
+          .batch(); //batch will collect sql commands first and execute one by one
       batch.execute("""
         CREATE TABLE $Item_Table (
               id INTEGER PRIMARY KEY,
@@ -41,10 +45,13 @@ class NewsDbProvider implements Source, Cache {
     });
   }
 
-
   Future<int> insertItem(ItemModel item) async {
     if (_db == null) await _init();
-    return _db!.insert(Item_Table, item.toDB());
+    return _db!.insert(
+      Item_Table,
+      item.toDB(),
+     /* conflictAlgorithm: ConflictAlgorithm.replace, //incase same id // solution for not inserting item from DB into DB*/
+    );
   }
 
   @override
@@ -52,18 +59,18 @@ class NewsDbProvider implements Source, Cache {
     if (_db == null) await _init();
     //final data = await _db!.rawQuery("SELECT * FROM $Item_Table where id = $id");
     final data = await _db!.query(
-        Item_Table,
-        where: "id =?",     //dont use this if need to fetch all
+      Item_Table,
+      where: "id =?", //dont use this if need to fetch all
       //  columns: ['id','descendants'],
-        whereArgs: [id],    //dont use this if need to fetch all
+      whereArgs: [id], //dont use this if need to fetch all
     );
-    if(data.length!=1) return null;
+    if (data.length != 1) return null;
     return ItemModel.fromDB(data.first);
   }
 
   @override
   Future<List<int>> fetchTopIDs() async {
     // TODO: implement fetchTopIDs
-   return [];
+    return [];
   }
 }
