@@ -13,11 +13,11 @@ class NewsApiProvider implements Source {
     try {
       final response = await client.get(uri);
       final body = jsonDecode(response.body) as List; //it will return List<dynamic> so wee need to cast as int
-      print("The top ids $body");
+   //   print("The top ids $body");
       return body.cast<int>();
     } catch (e) {
       print("Exception getting ids $e");
-      return []; //empty list
+      return []; //empty list  //.isEmpty
     }
   }
 
@@ -27,7 +27,7 @@ class NewsApiProvider implements Source {
     try {
       final response = await client.get(uri);
       final body = jsonDecode(response.body);
-      print("Response is $body");
+    //  print("Response is $body");
       final item = ItemModel.fromJson(body);
       return item;
     } catch (e) {

@@ -1,5 +1,4 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hacker_news/src/models/item_model.dart';
 import 'package:hacker_news/src/repo/new_api_provider.dart';
 import 'package:http/http.dart';
 import 'package:http/testing.dart';

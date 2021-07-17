@@ -20,11 +20,10 @@ class NewsDbProvider implements Source, Cache {
     final dbPath =
         path.join(dir.path, DB_NAME); //it will create file and hold the path
 
-    _db = await openDatabase(dbPath, version: 1,
+    _db = await openDatabase(dbPath, version: 2,
         onCreate: (Database newDb, int version) {
       //oncreate will call if database is not created. we cant use _db here since it is in await
-      Batch batch = newDb
-          .batch(); //batch will collect sql commands first and execute one by one
+      Batch batch = newDb.batch();
       batch.execute("""
         CREATE TABLE $Item_Table (
               id INTEGER PRIMARY KEY,
@@ -41,17 +40,20 @@ class NewsDbProvider implements Source, Cache {
               url TEXT          
         )     
         """);
+      batch.execute("ALTER TABLE $Item_Table ADD COLUMN text TEXT");
+      batch.commit();
+    }, onUpgrade: (Database newDb, int oldVersion, int newVersion) {
+      Batch batch = newDb.batch();
+      batch.execute("ALTER TABLE $Item_Table ADD COLUMN text TEXT");
       batch.commit();
     });
   }
 
+  @override
   Future<int> insertItem(ItemModel item) async {
     if (_db == null) await _init();
-    return _db!.insert(
-      Item_Table,
-      item.toDB(),
-     /* conflictAlgorithm: ConflictAlgorithm.replace, //incase same id // solution for not inserting item from DB into DB*/
-    );
+    return _db!.insert(Item_Table, item.toDB(),
+        conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   @override
@@ -72,5 +74,9 @@ class NewsDbProvider implements Source, Cache {
   Future<List<int>> fetchTopIDs() async {
     // TODO: implement fetchTopIDs
     return [];
+  }
+  Future<void> clearData() async {
+    if(_db == null) await _init();
+    await _db!.delete(Item_Table);
   }
 }

@@ -2,6 +2,8 @@ import 'dart:convert';
 
 class ItemModel {
   String? by;
+  String? text;   //for comments // we only added this later after defining db
+  //.toDB and .fromDb error since we havenot defined text column in table.. so we create onUpgrade
   int? descendants;
   int? id;
   int? parent;
@@ -17,6 +19,7 @@ class ItemModel {
   ItemModel(
       {this.by,
         this.descendants,
+        this.text,
         this.id,
         this.parent,
         this.kids,
@@ -30,12 +33,13 @@ class ItemModel {
 
   ItemModel.fromJson(Map<String, dynamic> json) {
     by = json['by'];
+    text = json['text'];
     descendants = json['descendants'];
     id = json['id'];
     parent = json['parent'];
     deleted = json['deleted'];
     dead = json['dead'];
-    kids = json['kids'].cast<int>();
+    kids = json['kids'] == null ? []: json['kids']?.cast<int>();
     score = json['score'];
     time = json['time'];
     title = json['title'];
@@ -45,12 +49,13 @@ class ItemModel {
 
   ItemModel.fromDB(Map<String, dynamic> json) {
     by = json['by'];
+    text = json['text'];
     descendants = json['descendants'];
     id = json['id'];
     parent = json['parent'];
     deleted = json['deleted'] == 1;  //if 1, deleted value will set to true
     dead = json['dead'] == 1;
-    kids = jsonDecode(json['kids']).cast<int>();
+    kids = jsonDecode(json['kids'])== null ? [] : jsonDecode(json['kids']).cast<int>();
     score = json['score'];
     time = json['time'];
     title = json['title'];
@@ -61,6 +66,7 @@ class ItemModel {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['by'] = this.by;
+    data['text'] = this.text;
     data['descendants'] = this.descendants;
     data['id'] = this.id;
     data['parent'] = this.parent;
@@ -79,6 +85,7 @@ class ItemModel {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['by'] = this.by;
     data['descendants'] = this.descendants;
+    data['text'] = this.text;
     data['id'] = this.id;
     data['parent'] = this.parent;
     data['kids'] = jsonEncode(this.kids);
